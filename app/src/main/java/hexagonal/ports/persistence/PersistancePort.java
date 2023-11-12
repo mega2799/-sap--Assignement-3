@@ -1,15 +1,42 @@
 package hexagonal.ports.persistence;
 
-import hexagonal.businessLogic.ILogic;
-import hexagonal.ports.IPort;
+import java.util.Optional;
 
-public class PersistancePort implements IPort {
+import hexagonal.adapters.mongoDB.MongoConnectorAdapter;
+import hexagonal.businessLogic.Entities.EScooter;
+import hexagonal.businessLogic.Entities.Ride;
+import hexagonal.businessLogic.Entities.User;
 
+public class PersistancePort {
 
-    @Override
-    public void start() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'start'");
+    MongoConnectorAdapter mongoConnectorAdapter;
+
+    public PersistancePort(String string) {
+        this.mongoConnectorAdapter = new MongoConnectorAdapter("Escooter");
     }
-    
+
+    public void saveUser(User user) {
+        this.mongoConnectorAdapter.saveUser(user);
+    }
+
+    public Optional<User> getUser(String userId) {
+        return this.mongoConnectorAdapter.getUser(userId);
+    }
+
+    public void saveEScooter(EScooter eScooter) {
+        this.mongoConnectorAdapter.saveEScooter(eScooter);
+    }
+
+    public Optional<EScooter> getEScooter(String id) {
+        return this.mongoConnectorAdapter.getEScooter(id);
+    }
+
+    public Object saveRide(Ride ride) {
+        return this.mongoConnectorAdapter.saveRide(ride);
+    }
+
+    public Optional<Ride> getRide(String rideId) {
+        return this.mongoConnectorAdapter.getRide(rideId);
+    }
+
 }

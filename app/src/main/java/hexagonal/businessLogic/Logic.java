@@ -7,12 +7,13 @@ import hexagonal.businessLogic.Entities.EScooter;
 import hexagonal.businessLogic.Entities.Ride;
 import hexagonal.businessLogic.Entities.User;
 import hexagonal.ports.IPort;
+import hexagonal.ports.persistence.PersistancePort;
 
 public class Logic implements ILogic {
-    private MongoConnectorAdapter persitencePort;
+    private PersistancePort persitencePort;
     
     public Logic() {
-        this.persitencePort = new MongoConnectorAdapter("Escooter");
+        this.persitencePort = new PersistancePort("Escooter");
     }
 
     @Override
