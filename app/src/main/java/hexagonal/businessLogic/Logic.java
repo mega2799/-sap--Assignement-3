@@ -2,15 +2,19 @@ package hexagonal.businessLogic;
 
 import java.util.Optional;
 
+import hexagonal.adapters.mongoDB.MongoConnectorAdapter;
 import hexagonal.businessLogic.Entities.EScooter;
 import hexagonal.businessLogic.Entities.Ride;
 import hexagonal.businessLogic.Entities.User;
 import hexagonal.ports.IPort;
 
 public class Logic implements ILogic {
-    private IPort persitencePort;
-    private IPort viewPort;
+    private MongoConnectorAdapter persitencePort;
     
+    public Logic() {
+        this.persitencePort = new MongoConnectorAdapter("Escooter");
+    }
+
     @Override
     public void addNewUser(String id, String name, String surname) {
         // TODO Auto-generated method stub

@@ -4,12 +4,6 @@ import hexagonal.businessLogic.ILogic;
 import hexagonal.ports.IPort;
 
 public class PersistancePort implements IPort {
-    private ILogic logic;
-
-
-    public PersistancePort(ILogic escooter) {
-        this.logic = escooter;
-    }
 
 
     @Override
