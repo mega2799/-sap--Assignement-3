@@ -7,6 +7,6 @@ import hexagonal.ports.persistence.PersistancePort;
 public class Main {
     public static void main(String[] args) {
         ILogic escooter = new Logic();
-        new GUIPort(8081, escooter).start();;
+        new GUIPort(80, escooter).start();;
     }
 }

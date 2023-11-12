@@ -1,9 +1,9 @@
 package hexagonal.ports.GUI;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 
 import hexagonal.adapters.vertx.EScooterManServer;
 import hexagonal.businessLogic.ILogic;
@@ -74,7 +74,7 @@ public class GUIPort implements IPort{
 		if (user.isPresent() && escooter.isPresent()) {
 			EScooter sc = escooter.get();
 			if (sc.isAvailable()) {
-				return this.logic.startNewRide(user.get(), escooter.get());
+				return this.logic.startNewRide(UUID.randomUUID().toString(), user.get(), escooter.get());
 			} else {
 				throw new RideNotPossibleException();
 			}

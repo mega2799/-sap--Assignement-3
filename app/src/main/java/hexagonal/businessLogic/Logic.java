@@ -17,38 +17,33 @@ public class Logic implements ILogic {
 
     @Override
     public void addNewUser(String id, String name, String surname) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addNewUser'");
+        this.persitencePort.saveUser(new User(id, name, surname));
     }
 
     @Override
     public Optional<User> getUser(String userId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getUser'");
+        return this.persitencePort.getUser(userId);
     }
 
     @Override
     public void addNewEScooter(String id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'addNewEScooter'");
+        this.persitencePort.saveEScooter(new EScooter(id));
     }
 
     @Override
     public Optional<EScooter> getEScooter(String id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getEScooter'");
+        return this.persitencePort.getEScooter(id);
     }
 
     @Override
-    public String startNewRide(User user, EScooter escooter) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'startNewRide'");
+    public String startNewRide(String id, User user, EScooter escooter) {
+        // qui non si dovrebbe ritornare nulla, per ora torna una stringa
+        return this.persitencePort.saveRide(new Ride(id, user, escooter)).toString();
     }
 
     @Override
     public Optional<Ride> getRide(String rideId) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getRide'");
+        return this.persitencePort.getRide(rideId);
     }
     
 }

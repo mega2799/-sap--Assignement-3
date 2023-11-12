@@ -14,6 +14,9 @@ public class Ride {
 	private boolean ongoing;
 	private String id;
 	
+	public Ride() {
+	}
+
 	public Ride(String id, User user, EScooter scooter) {
 		this.id = id;
 		this.startedDate = new Date();

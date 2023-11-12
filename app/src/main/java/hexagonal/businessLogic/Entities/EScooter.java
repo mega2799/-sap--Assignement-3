@@ -11,6 +11,9 @@ public class EScooter  {
 	private EScooterState state;
 	private Optional<Location> loc;
 	
+	public EScooter() {
+	}
+
 	public EScooter(String id) {
 		this.id = id;
 		this.state = EScooterState.AVAILABLE;

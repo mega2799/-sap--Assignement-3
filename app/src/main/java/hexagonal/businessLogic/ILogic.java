@@ -13,6 +13,6 @@ public interface ILogic {
 	void addNewEScooter(String id);
 	Optional<EScooter> getEScooter(String id);
 	
-	String startNewRide(User user, EScooter escooter);
+	String startNewRide(String id, User user, EScooter escooter);
 	Optional<Ride> getRide(String rideId); 
 }
