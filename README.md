@@ -5,3 +5,5 @@ L'architettura dell'applicazione e' stata modficata in un architettura esagonale
 E' stato implementato nell' adapter per lo storage il database non relazionale mongoDB, per l'adapter GUI vertx.
 
 Segue un piccolo schema precedente all'implementazione.
+
+![Schema dell'architettura esagonale](/img/1000014167.jpg)
