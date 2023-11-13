@@ -1,4 +1,4 @@
-package hexagonal.ports.GUI;
+package hexagonal.businessLogic.exceptions;
 
 public class EScooterNotFoundException extends Exception {
 

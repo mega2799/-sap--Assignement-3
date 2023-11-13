@@ -3,12 +3,12 @@ package hexagonal.adapters.vertx;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import hexagonal.ports.GUI.EScooterNotFoundException;
+import hexagonal.businessLogic.exceptions.EScooterNotFoundException;
+import hexagonal.businessLogic.exceptions.RideAlreadyEndedException;
+import hexagonal.businessLogic.exceptions.RideNotFoundException;
+import hexagonal.businessLogic.exceptions.UserIdAlreadyExistingException;
+import hexagonal.businessLogic.exceptions.UserNotFoundException;
 import hexagonal.ports.GUI.GUIPort;
-import hexagonal.ports.GUI.RideAlreadyEndedException;
-import hexagonal.ports.GUI.RideNotFoundException;
-import hexagonal.ports.GUI.UserIdAlreadyExistingException;
-import hexagonal.ports.GUI.UserNotFoundException;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
@@ -40,13 +40,49 @@ public class EScooterManServer extends AbstractVerticle {
 		router.route("/static/*").handler(StaticHandler.create().setCachingEnabled(false));
 		router.route().handler(BodyHandler.create());
 		
-		router.route(HttpMethod.POST, "/api/users").handler(this::registerNewUser);
-		router.route(HttpMethod.GET, "/api/users/:userId").handler(this::getUserInfo);
-		router.route(HttpMethod.POST, "/api/escooters").handler(this::registerNewEScooter);
-		router.route(HttpMethod.GET, "/api/escooters/:escooterId").handler(this::getEScooterInfo);
+		router.route(HttpMethod.POST, "/api/users").handler(event -> {
+			try {
+				registerNewUser(event);
+			} catch (UserIdAlreadyExistingException e) {
+				e.printStackTrace();
+			}
+		});
+		router.route(HttpMethod.GET, "/api/users/:userId").handler(event -> {
+			try {
+				getUserInfo(event);
+			} catch (UserNotFoundException e) {
+				e.printStackTrace();
+			}
+		});
+		router.route(HttpMethod.POST, "/api/escooters").handler(event -> {
+			try {
+				registerNewEScooter(event);
+			} catch (UserIdAlreadyExistingException e) {
+				e.printStackTrace();
+			}
+		});
+		router.route(HttpMethod.GET, "/api/escooters/:escooterId").handler(event -> {
+			try {
+				getEScooterInfo(event);
+			} catch (EScooterNotFoundException e) {
+				e.printStackTrace();
+			}
+		});
 		router.route(HttpMethod.POST, "/api/rides").handler(this::startNewRide);
-		router.route(HttpMethod.GET, "/api/rides/:rideId").handler(this::getRideInfo);
-		router.route(HttpMethod.POST, "/api/rides/:rideId/end").handler(this::endRide);
+		router.route(HttpMethod.GET, "/api/rides/:rideId").handler(event -> {
+			try {
+				getRideInfo(event);
+			} catch (RideNotFoundException e) {
+				e.printStackTrace();
+			}
+		});
+		router.route(HttpMethod.POST, "/api/rides/:rideId/end").handler(event -> {
+			try {
+				endRide(event);
+			} catch (RideNotFoundException | RideAlreadyEndedException e) {
+				e.printStackTrace();
+			}
+		});
 
 		server
 		.requestHandler(router)
@@ -55,7 +91,7 @@ public class EScooterManServer extends AbstractVerticle {
 		logger.log(Level.INFO, "EScooterMan server ready - port: " + numericPort);
 	}
 	
-	protected void registerNewUser(RoutingContext context) {
+	protected void registerNewUser(RoutingContext context) throws UserIdAlreadyExistingException {
 		logger.log(Level.INFO, "New registration user request - " + context.currentRoute().getPath());
 		JsonObject userInfo = context.body().asJsonObject();
 		logger.log(Level.INFO, "Body: " + userInfo.encodePrettily());
@@ -65,30 +101,22 @@ public class EScooterManServer extends AbstractVerticle {
 		String surname = userInfo.getString("surname");
 		
 		JsonObject reply = new JsonObject();
-		try {
-			this.port.registerNewUser(id, name, surname);
-			reply.put("result", "ok");
-		} catch (UserIdAlreadyExistingException ex) {
-			reply.put("result", "user-id-already-existing");
-		}
+		this.port.registerNewUser(id, name, surname);
+		reply.put("result", "ok");
 		sendReply(context, reply); 	
 	}
 	
-	protected void getUserInfo(RoutingContext context) {
+	protected void getUserInfo(RoutingContext context) throws UserNotFoundException {
 		logger.log(Level.INFO, "New user info request: " + context.currentRoute().getPath());
 	    String userId = context.pathParam("userId");
 		JsonObject reply = new JsonObject();
-		try {
-			JsonObject info = this.port.getUserInfo(userId);
-			reply.put("result", "ok");
-			reply.put("user", info);
-		} catch (UserNotFoundException ex) {
-			reply.put("result", "user-not-found");
-		}
+		JsonObject info = this.port.getUserInfo(userId);
+		reply.put("result", "ok");
+		reply.put("user", info);
 		sendReply(context, reply);
 	}
 
-	protected void registerNewEScooter(RoutingContext context) {
+	protected void registerNewEScooter(RoutingContext context) throws UserIdAlreadyExistingException {
 		logger.log(Level.INFO, "new EScooter registration request: " + context.currentRoute().getPath());
 		JsonObject escooterInfo = context.body().asJsonObject();
 		logger.log(Level.INFO, "Body: " + escooterInfo.encodePrettily());
@@ -96,26 +124,18 @@ public class EScooterManServer extends AbstractVerticle {
 		String id = escooterInfo.getString("id");
 		
 		JsonObject reply = new JsonObject();
-		try {
-			this.port.registerNewEScooter(id);
-			reply.put("result", "ok");
-		} catch (UserIdAlreadyExistingException ex) {
-			reply.put("result", "escooter-id-already-existing");
-		}
+		this.port.registerNewEScooter(id);
+		reply.put("result", "ok");
 		sendReply(context, reply);
 	}
 
-	protected void getEScooterInfo(RoutingContext context) {
+	protected void getEScooterInfo(RoutingContext context) throws EScooterNotFoundException {
 		logger.log(Level.INFO, "New escooter info request: " + context.currentRoute().getPath());
 	    String escooterId = context.pathParam("escooterId");
 		JsonObject reply = new JsonObject();
-		try {
-			JsonObject info = this.port.getEScooterInfo(escooterId);
-			reply.put("result", "ok");
-			reply.put("escooter", info);
-		} catch (EScooterNotFoundException ex) {
-			reply.put("result", "escooter-not-found");
-		}
+		JsonObject info = this.port.getEScooterInfo(escooterId);
+		reply.put("result", "ok");
+		reply.put("escooter", info);
 		sendReply(context, reply);
 	}
 	
@@ -138,32 +158,22 @@ public class EScooterManServer extends AbstractVerticle {
 		sendReply(context, reply);
 	}
 	
-	protected void getRideInfo(RoutingContext context) {
+	protected void getRideInfo(RoutingContext context) throws RideNotFoundException {
 		logger.log(Level.FINE, "New ride info request: " + context.currentRoute().getPath());
 	    String rideId = context.pathParam("rideId");
 		JsonObject reply = new JsonObject();
-		try {
-			JsonObject info = this.port.getRideInfo(rideId);
-			reply.put("result", "ok");
-			reply.put("ride", info);
-		} catch (RideNotFoundException ex) {
-			reply.put("result", "ride-not-found");
-		}
+		JsonObject info = this.port.getRideInfo(rideId);
+		reply.put("result", "ok");
+		reply.put("ride", info);
 		sendReply(context, reply);
 	}
 
-	protected void endRide(RoutingContext context) {
+	protected void endRide(RoutingContext context) throws RideNotFoundException, RideAlreadyEndedException {
 		logger.log(Level.INFO, "End ride request: " + context.currentRoute().getPath());
 	    String rideId = context.pathParam("rideId");
 		JsonObject reply = new JsonObject();
-		try {
-			this.port.endRide(rideId);
-			reply.put("result", "ok");
-		} catch (RideNotFoundException ex) {
-			reply.put("result", "ride-not-found");
-		} catch (RideAlreadyEndedException ex) {
-			reply.put("result", "ride-already-ended");
-		}
+		this.port.endRide(rideId);
+		reply.put("result", "ok");
 		sendReply(context, reply);
 	}
 	
