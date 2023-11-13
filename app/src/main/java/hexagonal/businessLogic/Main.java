@@ -1,11 +1,13 @@
 package hexagonal.businessLogic;
 
-import hexagonal.ports.IPort;
 import hexagonal.ports.GUI.GUIPort;
-import hexagonal.ports.persistence.PersistancePort;
 
 public class Main {
     public static void main(String[] args) {
+        /**
+         * Il fatto che la classe GUIport implementi la Logic e' una dependency injection
+         * che possiamo tenere ?
+         */
         ILogic escooter = new Logic();
         new GUIPort(80, escooter).start();;
     }

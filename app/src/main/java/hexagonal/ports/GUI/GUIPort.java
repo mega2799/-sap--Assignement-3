@@ -17,7 +17,10 @@ import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 
 public class GUIPort implements IPort{
-
+	/**
+	 * Il fatto che la porta utilizzi le eccezzioni della business
+	 * Logic e' corretto ?
+	 */
 	private int port;
     private ILogic logic;
     static Logger logger = Logger.getLogger("[EScooter Server]");	
