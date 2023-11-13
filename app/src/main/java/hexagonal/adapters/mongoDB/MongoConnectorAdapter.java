@@ -13,6 +13,7 @@ import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
 
+import java.util.List;
 import java.util.Optional;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
@@ -73,6 +74,10 @@ public class MongoConnectorAdapter {
 
     public Optional<Ride> getRide(String id) {
         return Optional.of(this.database.getCollection("ride", Ride.class).find(eq("_id", id)).first());
+    }
+
+    public List<Ride> getOngoingRides() {
+        return this.database.getCollection("ride", Ride.class).find(eq("ongoing", true)).into(List.of());
     }
 
 }

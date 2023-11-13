@@ -39,5 +39,5 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass.set("hexagonal.BusinessLogic.Main")
+    mainClass.set("hexagonal.BusinessLogic.Main.main")
 }

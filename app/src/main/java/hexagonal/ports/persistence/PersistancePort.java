@@ -1,5 +1,6 @@
 package hexagonal.ports.persistence;
 
+import java.util.List;
 import java.util.Optional;
 
 import hexagonal.adapters.mongoDB.MongoConnectorAdapter;
@@ -37,6 +38,10 @@ public class PersistancePort {
 
     public Optional<Ride> getRide(String rideId) {
         return this.mongoConnectorAdapter.getRide(rideId);
+    }
+
+    public List<Ride> getOngoingRides() {
+        return this.mongoConnectorAdapter.getOngoingRides();
     }
 
 }

@@ -1,11 +1,14 @@
 package hexagonal.ports.GUI;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import hexagonal.adapters.vertx.EScooterManServer;
+import hexagonal.adapters.vertxdashboard.EScooterDashboard;
 import hexagonal.businessLogic.ILogic;
+import hexagonal.businessLogic.Entities.Ride;
 import hexagonal.businessLogic.exceptions.EScooterNotFoundException;
 import hexagonal.businessLogic.exceptions.RideAlreadyEndedException;
 import hexagonal.businessLogic.exceptions.RideNotFoundException;
@@ -14,20 +17,23 @@ import hexagonal.businessLogic.exceptions.UserIdAlreadyExistingException;
 import hexagonal.businessLogic.exceptions.UserNotFoundException;
 import hexagonal.ports.IPort;
 import io.vertx.core.Vertx;
+import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 public class GUIPort implements IPort{
 	/**
-	 * Il fatto che la porta utilizzi le eccezzioni della business
+	 * Il fatto che la porta utilizzi le eccezioni della business
 	 * Logic e' corretto ?
 	 */
-	private int port;
+	private int serverPort;
+	private int dashboardPort;
     private ILogic logic;
     static Logger logger = Logger.getLogger("[EScooter Server]");	
 
 
-    public GUIPort(int port, ILogic logic) {
-        this.port = port;
+    public GUIPort(int serverPort, int dashboardPort,  ILogic logic) {
+		this.dashboardPort = dashboardPort;
+        this.serverPort = serverPort;
         this.logic = logic;
 		logger.setLevel(Level.INFO);
     }
@@ -36,8 +42,12 @@ public class GUIPort implements IPort{
     @Override
     public void start() {
     	Vertx vertx = Vertx.vertx();
-		EScooterManServer myVerticle = new EScooterManServer(port, this);
+		//Vertx per il web server
+		EScooterManServer myVerticle = new EScooterManServer(serverPort, this);
 		vertx.deployVerticle(myVerticle);		
+		//Vertx per la dashboard
+		EScooterDashboard dashboardVerticle = new EScooterDashboard(dashboardPort, this);
+		vertx.deployVerticle(dashboardVerticle);
     }
 
 	public void registerNewUser(String id, String name, String surname) {
@@ -56,7 +66,6 @@ public class GUIPort implements IPort{
 			return JsonObject.of();
 		}
 	}
-
 	
 	public void registerNewEScooter(String id) {
 		this.logic.addNewEScooter(id);
@@ -95,5 +104,10 @@ public class GUIPort implements IPort{
 		} catch (RideNotFoundException | RideAlreadyEndedException e) {
 			e.printStackTrace();
 		}
+	}
+
+
+	public JsonArray getOnGoingRides() {
+		return JsonArray.of(this.logic.getOngoingRides());
 	}
 }

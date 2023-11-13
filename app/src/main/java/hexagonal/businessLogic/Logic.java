@@ -1,5 +1,6 @@
 package hexagonal.businessLogic;
 
+import java.util.List;
 import java.util.Optional;
 
 import hexagonal.adapters.mongoDB.MongoConnectorAdapter;
@@ -14,6 +15,9 @@ import hexagonal.businessLogic.exceptions.UserIdAlreadyExistingException;
 import hexagonal.businessLogic.exceptions.UserNotFoundException;
 import hexagonal.ports.IPort;
 import hexagonal.ports.persistence.PersistancePort;
+import io.vertx.core.json.Json;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 public class Logic implements ILogic {
     private PersistancePort persitencePort;
@@ -100,6 +104,11 @@ public class Logic implements ILogic {
 		} else {
 			throw new RideNotFoundException();
 		}
+	}
+
+	@Override
+	public List<Ride> getOngoingRides() {
+		return this.persitencePort.getOngoingRides();
 	}
     
 }

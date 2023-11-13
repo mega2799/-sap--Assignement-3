@@ -9,6 +9,6 @@ public class Main {
          * che possiamo tenere ?
          */
         ILogic escooter = new Logic();
-        new GUIPort(80, escooter).start();;
+        new GUIPort(8070, 80, escooter).start();;
     }
 }
